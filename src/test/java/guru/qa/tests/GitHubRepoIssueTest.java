@@ -21,7 +21,6 @@ public class GitHubRepoIssueTest {
     public static final String PROJECT_NAME = "qa-guru/qa_guru_14_10";
     public static final String ISSUE_NAME = "Issue for Autotest";
 
-
     @Test
     @Feature("Repository issue tab")
     @Story("Assure that specific issue exists")
