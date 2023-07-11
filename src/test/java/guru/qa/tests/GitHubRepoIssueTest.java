@@ -2,7 +2,10 @@ package guru.qa.tests;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.logevents.SelenideLogger;
-import guru.qa.page_steps.GithubMainPage;
+import guru.qa.page.GitHubHomePage;
+import guru.qa.page.RepositoryPage;
+import guru.qa.page.SearchingResultPage;
+import guru.qa.page.web_steps.WebSteps;
 import io.qameta.allure.*;
 import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +19,6 @@ import static org.openqa.selenium.By.linkText;
 
 public class GitHubRepoIssueTest {
 
-    GithubMainPage githubMainPage = new GithubMainPage();
-
     public static final String PROJECT_NAME = "qa-guru/qa_guru_14_10";
     public static final String ISSUE_NAME = "Issue for Autotest";
 
@@ -27,7 +28,7 @@ public class GitHubRepoIssueTest {
     @Owner("Kas-MV")
     @Severity(SeverityLevel.NORMAL)
     @Link(value = "github.com", url = "https://github.com")
-    @DisplayName("Issue in repository issue-tab exists")
+    @DisplayName("Issue in repository issue-tab exists Selenide With Listener")
     void testIssueNameSelenideWithListener() {
         SelenideLogger.addListener("allure", new AllureSelenide());
         open("https://github.com");
@@ -44,14 +45,18 @@ public class GitHubRepoIssueTest {
     @Owner("Kas-MV")
     @Severity(SeverityLevel.NORMAL)
     @Link(value = "github.com", url = "https://github.com")
-    @DisplayName("Issue in repository issue-tab exists")
+    @DisplayName("Issue in repository issue-tab exists lambda syntax")
     void testIssueNameLambdaSyntax() {
-        step("1. Открыть главную страницу GitHub", () -> githubMainPage.openPage());
-        step("2. Клик в строку поиска", () -> githubMainPage.clickInTheSearchBar());
-        step("3. Ввод значения для поиска", () -> githubMainPage.enteringValueInSearchBar(PROJECT_NAME));
-        step("4. Клик на подходящий результат", () -> githubMainPage.selectProject(PROJECT_NAME));
-        step("5. Клик на Issues", () -> githubMainPage.issueTabClick());
-        step("6. Сравнение название Issue", () -> githubMainPage.issueNameCheck(ISSUE_NAME));
+        SelenideLogger.addListener("allure", new AllureSelenide());
+        GitHubHomePage homePage = new GitHubHomePage();
+        SearchingResultPage searchingResultPage = new SearchingResultPage();
+        RepositoryPage repositoryPage = new RepositoryPage();
+        step("1. Открыть главную страницу GitHub", homePage::openPage);
+        step("2. Клик в строку поиска", homePage::clickInTheSearchBar);
+        step("3. Ввод значения для поиска", () -> homePage.enteringValueInSearchBar(PROJECT_NAME));
+        step("4. Клик на подходящий результат", () -> searchingResultPage.selectProject(PROJECT_NAME));
+        step("5. Клик на Issues", repositoryPage::issueTabClick);
+        step("6. Сравнение название Issue", () -> repositoryPage.issueNameCheck(ISSUE_NAME));
     }
 
     @Test
@@ -60,13 +65,16 @@ public class GitHubRepoIssueTest {
     @Owner("Kas-MV")
     @Severity(SeverityLevel.NORMAL)
     @Link(value = "github.com", url = "https://github.com")
-    @DisplayName("Issue in repository issue-tab exists")
+    @DisplayName("Issue in repository issue-tab exists annotation step")
     void testAnnotatedStep() {
-        githubMainPage.openPage();
-        githubMainPage.clickInTheSearchBar();
-        githubMainPage.enteringValueInSearchBar(PROJECT_NAME);
-        githubMainPage.selectProject(PROJECT_NAME);
-        githubMainPage.issueTabClick();
-        githubMainPage.issueNameCheck(ISSUE_NAME);
+        WebSteps steps = new WebSteps();
+        SelenideLogger.addListener("allure", new AllureSelenide());
+        steps
+                .openPage()
+                .clickInTheSearchBar()
+                .enteringValueInSearchBar(PROJECT_NAME)
+                .selectProject(PROJECT_NAME)
+                .issueTabClick()
+                .issueNameCheck(ISSUE_NAME);
     }
 }
